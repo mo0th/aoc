@@ -7,26 +7,29 @@ pub fn get_input() -> Result<String, Box<dyn Error>> {
   Ok(input)
 }
 
+enum Move {
+  Horizontal(i32),
+  Vertical(i32),
+}
+
 pub fn solve_a(input: String) -> String {
-  let mut depth = 0;
-  let mut position = 0;
-
-  for line in input.lines() {
-    let parts: Vec<String> = line.split(" ").map(|s| String::from(s)).collect();
-
-    let dir = &parts[0];
-    let amount = (&parts[1]).parse::<i32>().unwrap();
-
-    match dir.as_str() {
-      "forward" => position += amount,
-      // "forward" => {
-      //   position -= amount
-      // },
-      "up" => depth -= amount,
-      "down" => depth += amount,
-      _ => (),
-    }
-  }
+  let (depth, position) = input
+    .lines()
+    .map(|line| {
+      let parts: Vec<String> = line.split(" ").map(|s| String::from(s)).collect();
+      let dir = &parts[0];
+      let amount = (&parts[1]).parse::<i32>().unwrap();
+      match dir.as_str() {
+        "forward" => Move::Horizontal(amount),
+        "up" => Move::Vertical(-amount),
+        "down" => Move::Vertical(amount),
+        _ => Move::Horizontal(0),
+      }
+    })
+    .fold((0, 0), |(depth, position), mv| match mv {
+      Move::Horizontal(v) => (depth, position + v),
+      Move::Vertical(v) => (depth + v, position),
+    });
 
   String::from(format!("{}", depth * position))
 }
