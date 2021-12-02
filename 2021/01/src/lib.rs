@@ -13,15 +13,13 @@ pub fn solve_a(input: String) -> String {
     .map(|s| s.parse().unwrap())
     .collect();
 
-  let mut count = 0;
-
-  for window in numbers.windows(2) {
-    if let &[n1, n2] = window {
-      if n2 > n1 {
-        count += 1
-      }
-    }
-  }
+  let count = numbers
+    .windows(2)
+    .filter(|window| match window {
+      &[n1, n2] => n2 > n1,
+      _ => false,
+    })
+    .count();
 
   String::from(format!("{}", count))
 }
@@ -32,17 +30,13 @@ pub fn solve_b(input: String) -> String {
     .map(|s| s.parse().unwrap())
     .collect();
 
-  let mut count = 0;
-
-  for window in numbers.windows(4) {
-    if let &[n1, n2, n3, n4] = window {
-      let s1 = n1 + n2 + n3;
-      let s2 = n2 + n3 + n4;
-      if s2 > s1 {
-        count += 1
-      }
-    }
-  }
+  let count = numbers
+    .windows(4)
+    .filter(|window| match window {
+      &[n1, n2, n3, n4] => (n2 + n3 + n4) > (n1 + n2 + n3),
+      _ => false,
+    })
+    .count();
 
   String::from(format!("{}", count))
 }
