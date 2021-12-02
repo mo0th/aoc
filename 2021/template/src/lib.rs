@@ -1,11 +1,10 @@
 use std::error::Error;
 use std::fs;
 
-pub fn get_inputs() -> Result<(String, String), Box<dyn Error>> {
-  let input_a = fs::read_to_string("input-a")?;
-  let input_b = fs::read_to_string("input-b")?;
+pub fn get_input() -> Result<String, Box<dyn Error>> {
+  let input = fs::read_to_string("input")?;
 
-  Ok((input_a, input_b))
+  Ok(input)
 }
 
 pub fn solve_a(input: String) -> String {

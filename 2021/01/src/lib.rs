@@ -1,19 +1,50 @@
 use std::error::Error;
 use std::fs;
 
-pub fn get_inputs() -> Result<(String, String), Box<dyn Error>> {
-  let input_a = fs::read_to_string("input-a")?;
-  let input_b = fs::read_to_string("input-b")?;
+pub fn get_input() -> Result<String, Box<dyn Error>> {
+  let input = fs::read_to_string("input")?;
 
-  Ok((input_a, input_b))
+  Ok(input)
 }
 
 pub fn solve_a(input: String) -> String {
-  input
+  let numbers: Vec<i32> = input
+    .split_whitespace()
+    .map(|s| s.parse().unwrap())
+    .collect();
+
+  let mut count = 0;
+
+  for window in numbers.windows(2) {
+    if let &[n1, n2] = window {
+      if n2 > n1 {
+        count += 1
+      }
+    }
+  }
+
+  String::from(format!("{}", count))
 }
 
 pub fn solve_b(input: String) -> String {
-  input
+  let numbers: Vec<i32> = input
+    .split_whitespace()
+    .map(|s| s.parse().unwrap())
+    .collect();
+
+  let mut count = 0;
+
+  for window in numbers.windows(4) {
+    if let &[n1, n2, n3, n4] = window {
+      let s1 = n1 + n2 + n3;
+      let s2 = n2 + n3 + n4;
+      if s2 > s1 {
+        count += 1
+      }
+    }
+  }
+
+  String::from(format!("{}", count))
 }
 
 #[cfg(test)]

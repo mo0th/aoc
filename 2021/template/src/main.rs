@@ -1,11 +1,11 @@
 use std::env;
 use std::process;
 
-use aoc::{get_inputs, solve_a, solve_b};
+use aoc::{get_input, solve_a, solve_b};
 
 fn main() {
-    let (input_a, input_b) = get_inputs().unwrap_or_else(|err| {
-        eprintln!("Problem getting inputs {}", err);
+    let input = get_input().unwrap_or_else(|err| {
+        eprintln!("Problem getting input {}", err);
         process::exit(1);
     });
 
@@ -24,11 +24,11 @@ fn main() {
     match part.as_str() {
         "a" => {
             println!("Part A\n");
-            println!("{}", solve_a(input_a));
+            println!("{}", solve_a(input));
         }
         "b" => {
             println!("Part B\n");
-            println!("{}", solve_b(input_b));
+            println!("{}", solve_b(input));
         }
         _ => {
             eprintln!("Invalid part");
