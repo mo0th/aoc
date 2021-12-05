@@ -5,3 +5,5 @@ dest="$1"
 rm -rf "./template/target"
 cp -R "./template" "$dest"
 
+./watch "$dest"
+

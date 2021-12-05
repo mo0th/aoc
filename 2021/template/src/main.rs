@@ -4,11 +4,6 @@ use std::process;
 use aoc::{get_input, solve_a, solve_b};
 
 fn main() {
-    let input = get_input().unwrap_or_else(|err| {
-        eprintln!("Problem getting input {}", err);
-        process::exit(1);
-    });
-
     let mut args = env::args();
 
     args.next();
@@ -24,15 +19,17 @@ fn main() {
     match part.as_str() {
         "a" => {
             println!("Part A\n");
-            println!("{}", solve_a(input));
+            println!("{}", solve_a(get_input()));
         }
         "b" => {
             println!("Part B\n");
-            println!("{}", solve_b(input));
+            println!("{}", solve_b(get_input()));
         }
         _ => {
-            eprintln!("Invalid part");
-            process::exit(1);
+            println!("Part A\n");
+            println!("{}", solve_a(get_input()));
+            println!("Part B\n");
+            println!("{}", solve_b(get_input()));
         }
     }
 }
