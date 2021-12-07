@@ -1,11 +1,8 @@
-use std::error::Error;
-use std::fs;
-
 pub fn get_input() -> String {
   String::from(include_str!("../input"))
 }
 
-fn get_sample_input() -> String {
+pub fn get_sample_input() -> String {
   String::from(include_str!("../sample"))
 }
 
