@@ -37,4 +37,6 @@ mod tests {
   fn b() {
     assert_eq!(solve_b(get_input()), 0);
   }
+
+  //
 }
