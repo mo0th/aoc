@@ -8,8 +8,8 @@ pub fn get_sample_input() -> String {
   String::from(include_str!("../sample"))
 }
 
-fn is_small_case(cave: &String) -> bool {
-  *cave == cave.to_lowercase()
+fn is_small_cave(cave: &String) -> bool {
+  cave.chars().all(|c| c >= 'a')
 }
 
 pub fn print_graph(graph: &HashMap<String, HashSet<String>>) {
@@ -18,7 +18,7 @@ pub fn print_graph(graph: &HashMap<String, HashSet<String>>) {
   }
 }
 
-fn parse(input: String) -> HashMap<String, HashSet<String>> {
+fn parse(input: &String) -> HashMap<String, HashSet<String>> {
   let mut graph = HashMap::new();
 
   for line in input.lines() {
@@ -37,7 +37,7 @@ fn parse(input: String) -> HashMap<String, HashSet<String>> {
 }
 
 pub fn solve_a(input: String) -> i64 {
-  let graph = parse(input);
+  let graph = parse(&input);
 
   let mut queue = VecDeque::new();
   let mut count = 0;
@@ -59,7 +59,7 @@ pub fn solve_a(input: String) -> i64 {
     let connected_caves = graph.get(last_in_current).unwrap();
 
     for next in connected_caves.iter() {
-      if is_small_case(next) && current.contains(next) {
+      if is_small_cave(next) && current.contains(next) {
         continue;
       }
 
@@ -73,13 +73,13 @@ pub fn solve_a(input: String) -> i64 {
 }
 
 pub fn solve_b(input: String) -> i64 {
-  let graph = parse(input);
+  let graph = parse(&input);
 
   let mut queue = VecDeque::new();
   let mut count = 0;
 
-  let start: String = String::from("start");
-  let end: String = String::from("end");
+  let start = String::from("start");
+  let end = String::from("end");
 
   queue.push_back(vec![start]);
 
@@ -99,14 +99,14 @@ pub fn solve_b(input: String) -> i64 {
         continue;
       }
 
-      let small_cave_count = current.iter().filter(|c| is_small_case(c)).count();
+      let small_cave_count = current.iter().filter(|c| is_small_cave(c)).count();
       let unique_small_cave_count = current
         .iter()
-        .filter(|c| is_small_case(c))
+        .filter(|c| is_small_cave(c))
         .collect::<HashSet<_>>()
         .len();
 
-      if is_small_case(next) && current.contains(next) && small_cave_count > unique_small_cave_count
+      if is_small_cave(next) && current.contains(next) && small_cave_count > unique_small_cave_count
       {
         continue;
       }
