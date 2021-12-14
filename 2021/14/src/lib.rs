@@ -11,7 +11,7 @@ pub fn get_sample_input() -> String {
 pub fn solve_a(input: String) -> i64 {
   let parts: Vec<_> = input.split("\n\n").collect();
 
-  let mut polymer: Vec<_> = parts[0].chars().collect();
+  let polymer: Vec<_> = parts[0].chars().collect();
 
   let rules: HashMap<_, _> = parts[1]
     .split("\n")
@@ -23,25 +23,57 @@ pub fn solve_a(input: String) -> i64 {
     })
     .collect();
 
+  let mut counts = parts[0]
+    .chars()
+    .collect::<Vec<_>>()
+    .windows(2)
+    .map(|window| window.iter().collect::<String>())
+    .into_iter()
+    .fold(HashMap::new(), |mut acc, c| {
+      *acc.entry(c).or_insert(0) += 1;
+      acc
+    });
+
   for _ in 0..10 {
-    let mut next_polymer: Vec<_> = polymer
-      .windows(2)
-      .flat_map(|window| {
-        let pattern: String = window.iter().collect();
-        return [window[0], *rules.get(&pattern).unwrap()];
-      })
-      .collect();
-    next_polymer.push(*polymer.last().unwrap());
-    polymer = next_polymer
+    let new_counts = counts
+      .iter()
+      .fold(HashMap::new(), |mut acc, (pair, count)| {
+        let to_insert = rules.get(pair).unwrap();
+        let chars: Vec<_> = pair.chars().collect();
+        let new_pair = chars[0].to_string() + &to_insert.to_string();
+        *acc.entry(new_pair).or_insert(0) += count;
+        let new_pair = to_insert.to_string() + &chars[1].to_string();
+        *acc.entry(new_pair).or_insert(0) += count;
+
+        acc
+      });
+
+    counts = new_counts;
   }
 
-  let counts = polymer.iter().fold(HashMap::new(), |mut acc, c| {
-    *acc.entry(c).or_insert(0) += 1;
-    acc
-  });
+  let mut char_counts = counts
+    .iter()
+    .fold(HashMap::new(), |mut acc, (pair, count)| {
+      for c in pair.chars() {
+        *acc.entry(c).or_insert(0) += count;
+      }
 
-  let min_count = counts.values().min().unwrap();
-  let max_count = counts.values().max().unwrap();
+      acc
+    });
+
+  let first_char = polymer.first().unwrap();
+  let last_char = polymer.last().unwrap();
+  for c in [first_char, last_char] {
+    *char_counts.entry(*c).or_insert(0) += 1;
+  }
+
+  char_counts = char_counts
+    .into_iter()
+    .map(|(pair, count)| (pair, count / 2))
+    .collect();
+
+  let min_count = char_counts.values().min().unwrap();
+  let max_count = char_counts.values().max().unwrap();
 
   max_count - min_count
 }
@@ -49,7 +81,7 @@ pub fn solve_a(input: String) -> i64 {
 pub fn solve_b(input: String) -> i64 {
   let parts: Vec<_> = input.split("\n\n").collect();
 
-  let mut polymer: Vec<_> = parts[0].chars().collect();
+  let polymer: Vec<_> = parts[0].chars().collect();
 
   let rules: HashMap<_, _> = parts[1]
     .split("\n")
@@ -61,25 +93,57 @@ pub fn solve_b(input: String) -> i64 {
     })
     .collect();
 
+  let mut counts = parts[0]
+    .chars()
+    .collect::<Vec<_>>()
+    .windows(2)
+    .map(|window| window.iter().collect::<String>())
+    .into_iter()
+    .fold(HashMap::new(), |mut acc, c| {
+      *acc.entry(c).or_insert(0) += 1;
+      acc
+    });
+
   for _ in 0..40 {
-    let mut next_polymer: Vec<_> = polymer
-      .windows(2)
-      .flat_map(|window| {
-        let pattern: String = window.iter().collect();
-        return [window[0], *rules.get(&pattern).unwrap()];
-      })
-      .collect();
-    next_polymer.push(*polymer.last().unwrap());
-    polymer = next_polymer;
+    let new_counts = counts
+      .iter()
+      .fold(HashMap::new(), |mut acc, (pair, count)| {
+        let to_insert = rules.get(pair).unwrap();
+        let chars: Vec<_> = pair.chars().collect();
+        let new_pair = chars[0].to_string() + &to_insert.to_string();
+        *acc.entry(new_pair).or_insert(0) += count;
+        let new_pair = to_insert.to_string() + &chars[1].to_string();
+        *acc.entry(new_pair).or_insert(0) += count;
+
+        acc
+      });
+
+    counts = new_counts;
   }
 
-  let counts = polymer.iter().fold(HashMap::new(), |mut acc, c| {
-    *acc.entry(c).or_insert(0) += 1;
-    acc
-  });
+  let mut char_counts = counts
+    .iter()
+    .fold(HashMap::new(), |mut acc, (pair, count)| {
+      for c in pair.chars() {
+        *acc.entry(c).or_insert(0) += count;
+      }
 
-  let min_count = counts.values().min().unwrap();
-  let max_count = counts.values().max().unwrap();
+      acc
+    });
+
+  let first_char = polymer.first().unwrap();
+  let last_char = polymer.last().unwrap();
+  for c in [first_char, last_char] {
+    *char_counts.entry(*c).or_insert(0) += 1;
+  }
+
+  char_counts = char_counts
+    .into_iter()
+    .map(|(pair, count)| (pair, count / 2))
+    .collect();
+
+  let min_count = char_counts.values().min().unwrap();
+  let max_count = char_counts.values().max().unwrap();
 
   max_count - min_count
 }
@@ -105,7 +169,7 @@ mod tests {
 
   #[test]
   fn b() {
-    assert_eq!(solve_b(get_input()), 0);
+    assert_eq!(solve_b(get_input()), 5208377027195);
   }
 
   //
