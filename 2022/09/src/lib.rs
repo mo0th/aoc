@@ -1,6 +1,6 @@
 use std::{
     collections::{HashSet, VecDeque},
-    iter::FromIterator,
+    iter::once,
 };
 
 pub fn get_input() -> String {
@@ -11,6 +11,7 @@ pub fn get_sample_input() -> String {
     String::from(include_str!("../sample"))
 }
 
+#[derive(Debug)]
 enum Dir {
     UP,
     DOWN,
@@ -57,7 +58,6 @@ pub fn solve_a(input: String) -> i64 {
             Dir::DOWN => (0, 1),
             Dir::LEFT => (-1, 0),
             Dir::RIGHT => (1, 0),
-            _ => todo!(),
         };
 
         for _ in 0..amt {
@@ -71,7 +71,6 @@ pub fn solve_a(input: String) -> i64 {
             head = next_head;
             tail = next_tail;
             visited.insert(next_tail.clone());
-            // println!("{head:?} {tail:?}");
         }
     }
 
@@ -79,11 +78,11 @@ pub fn solve_a(input: String) -> i64 {
 }
 
 pub fn solve_b(input: String) -> i64 {
-    let mut head = (0, 0);
-    let mut tail = VecDeque::from_iter((0..9).map(|_| head.clone()));
+    let mut rope = vec![(0, 0); 10];
+    let rope_len = rope.len();
     let mut visited = HashSet::<Point>::new();
 
-    visited.insert(tail[0]);
+    visited.insert(*rope.last().unwrap());
 
     let moves = input
         .lines()
@@ -105,29 +104,43 @@ pub fn solve_b(input: String) -> i64 {
         })
         .collect::<Vec<_>>();
 
-    for (dir, amt) in moves {
+    for (dir, amt) in moves.into_iter() {
         let add = match dir {
             Dir::UP => (0, -1),
             Dir::DOWN => (0, 1),
             Dir::LEFT => (-1, 0),
             Dir::RIGHT => (1, 0),
-            _ => todo!(),
         };
 
         for _ in 0..amt {
-            let next_head = (head.0 + add.0, head.1 + add.1);
+            let new_head = (rope[0].0 + add.0, rope[0].1 + add.1);
+            rope[0] = new_head;
 
-            if !is_adjacent_or_covering(next_head, tail[0]) {
-                tail.push_front(head.clone());
+            for i in 1..rope_len {
+                let curr = rope[i];
+                let prev = rope[i - 1];
+                let (mut curr_x, mut curr_y) = curr;
 
-                if tail.len() > 9 {
-                    tail.pop_back();
+                if !is_adjacent_or_covering(prev, curr) {
+                    let (prev_x, prev_y) = prev;
+
+                    if prev_x > curr_x {
+                        curr_x += 1;
+                    } else if prev_x < curr_x {
+                        curr_x -= 1;
+                    }
+
+                    if prev_y > curr_y {
+                        curr_y += 1;
+                    } else if prev_y < curr_y {
+                        curr_y -= 1;
+                    }
                 }
+
+                rope[i] = (curr_x, curr_y);
             }
 
-            head = next_head;
-            visited.insert(tail[0].clone());
-            println!("{head:?} {tail:?}");
+            visited.insert(*rope.last().unwrap());
         }
     }
 
@@ -151,7 +164,7 @@ mod tests {
     }
 
     #[test]
-    #[ignore]
+    // #[ignore]
     fn b_eg_1() {
         assert_eq!(
             solve_b(
@@ -171,14 +184,8 @@ U 20"
 
     #[test]
     // #[ignore]
-    fn b_eg_2() {
-        assert_eq!(solve_b(get_sample_input()), 36);
-    }
-
-    #[test]
-    #[ignore]
     fn b() {
-        assert_eq!(solve_b(get_input()), 0);
+        assert_eq!(solve_b(get_input()), 2678);
     }
 
     //
