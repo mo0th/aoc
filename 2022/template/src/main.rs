@@ -12,20 +12,22 @@ fn main() {
         None => String::from("x"),
     };
 
+    let run_a = || {
+        println!("Part A\n");
+        println!("{}", solve_a(get_input()));
+    };
+
+    let run_b = || {
+        println!("Part B\n");
+        println!("{}", solve_b(get_input()));
+    };
+
     match part.as_str() {
-        "a" => {
-            println!("Part A\n");
-            println!("{}", solve_a(get_input()));
-        }
-        "b" => {
-            println!("Part B\n");
-            println!("{}", solve_b(get_input()));
-        }
+        "a" => run_a(),
+        "b" => run_b(),
         _ => {
-            println!("Part A\n");
-            println!("{}", solve_a(get_input()));
-            println!("Part B\n");
-            println!("{}", solve_b(get_input()));
+            run_a();
+            run_b();
         }
     }
 }
