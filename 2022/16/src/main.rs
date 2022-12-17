@@ -1,6 +1,6 @@
 use std::env;
 
-use aoc::{get_input, solve_a, solve_b};
+use aoc::{get_input, get_sample_input, solve_a, solve_b};
 
 fn main() {
     let mut args = env::args();
@@ -13,12 +13,12 @@ fn main() {
     };
 
     let run_a = || {
-        println!("Part A");
-        println!("{}", solve_a(get_input()));
+        println!("Part A\n");
+        println!("{}", solve_a(get_sample_input()));
     };
 
     let run_b = || {
-        println!("Part B");
+        println!("Part B\n");
         println!("{}", solve_b(get_input()));
     };
 
@@ -27,7 +27,6 @@ fn main() {
         "b" => run_b(),
         _ => {
             run_a();
-            println!();
             run_b();
         }
     }
