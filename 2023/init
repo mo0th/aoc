@@ -1,0 +1,12 @@
+#!/bin/sh
+
+dest="$1"
+
+rm -rf "./template/target"
+cp -R "./template" "$dest"
+
+if [ "$2" = "-w" ]; then
+  ./watch "$dest"
+fi
+
+

@@ -1,0 +1,8 @@
+#!/bin/bash
+
+day="$1"
+
+cd $day
+
+cargo watch -x "test -- --nocapture"
+
