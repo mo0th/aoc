@@ -1,4 +1,5 @@
 use itertools::{repeat_n, Itertools};
+use rayon::prelude::*;
 
 pub fn get_input() -> String {
     String::from(include_str!("../input"))
@@ -48,41 +49,31 @@ fn is_equation_ok_a(equation: &Equation) -> bool {
     let values = values.clone();
 
     let start = values[0];
-
     let max_ops_n = 2_u32.pow(values.len() as u32 - 1);
-    for ops in 0..max_ops_n {
-        let ops = to_ops_a(ops);
 
+    return (0..max_ops_n).map(to_ops_a).any(|ops| {
         let mut curr = start;
-
-        let mut broke = false;
 
         for (i, next_val) in values.iter().skip(1).enumerate() {
             let op = &ops[i];
 
             curr = if let Some(updated) = op.apply(curr, *next_val) {
                 if updated > *target {
-                    broke = true;
-                    break;
+                    return false;
                 }
 
                 updated
             } else {
-                broke = true;
-                break;
+                return false;
             }
         }
 
-        if target == &curr && !broke {
-            return true;
-        }
-    }
-
-    return false;
+        return target == &curr;
+    });
 }
 
 pub fn solve_a(input: String) -> i64 {
-    let equations = input
+    input
         .lines()
         .map(|line| {
             let (target, values) = line.split_once(": ").unwrap();
@@ -92,20 +83,14 @@ pub fn solve_a(input: String) -> i64 {
                 values.split(" ").map(parse_i64).collect::<Vec<_>>(),
             );
         })
-        .collect::<Vec<_>>();
-
-    let valid_eqs: i64 = equations
-        .iter()
         .filter_map(|eq| {
-            if is_equation_ok_a(eq) {
+            if is_equation_ok_a(&eq) {
                 Some(eq.0)
             } else {
                 None
             }
         })
-        .sum();
-
-    valid_eqs
+        .sum()
 }
 
 fn is_equation_ok_b(equation: &Equation) -> bool {
@@ -116,39 +101,32 @@ fn is_equation_ok_b(equation: &Equation) -> bool {
 
     let ops_options = vec![Op::Add, Op::Multiply, Op::Concat];
 
-    // dbg!(max_ops_n);
-    for ops in repeat_n(ops_options.iter(), values.len() - 1).multi_cartesian_product() {
-        let mut curr = start;
+    return repeat_n(ops_options.iter(), values.len() - 1)
+        .multi_cartesian_product()
+        .any(|ops| {
+            let mut curr = start;
 
-        let mut broke = false;
+            for (i, next_val) in values.iter().skip(1).enumerate() {
+                let op = &ops[i];
 
-        for (i, next_val) in values.iter().skip(1).enumerate() {
-            let op = &ops[i];
+                curr = if let Some(updated) = op.apply(curr, *next_val) {
+                    if updated > *target {
+                        return false;
+                    }
 
-            curr = if let Some(updated) = op.apply(curr, *next_val) {
-                if updated > *target {
-                    broke = true;
-                    break;
+                    updated
+                } else {
+                    return false;
                 }
-
-                updated
-            } else {
-                broke = true;
-                break;
             }
-        }
 
-        if target == &curr && !broke {
-            return true;
-        }
-    }
-
-    return false;
+            return target == &curr;
+        });
 }
 
 pub fn solve_b(input: String) -> i64 {
-    let equations = input
-        .lines()
+    input
+        .par_lines()
         .map(|line| {
             let (target, values) = line.split_once(": ").unwrap();
 
@@ -157,20 +135,14 @@ pub fn solve_b(input: String) -> i64 {
                 values.split(" ").map(parse_i64).collect::<Vec<_>>(),
             );
         })
-        .collect::<Vec<_>>();
-
-    let valid_eqs: i64 = equations
-        .iter()
         .filter_map(|eq| {
-            if is_equation_ok_b(eq) {
+            if is_equation_ok_b(&eq) {
                 Some(eq.0)
             } else {
                 None
             }
         })
-        .sum();
-
-    valid_eqs
+        .sum()
 }
 
 #[cfg(test)]
