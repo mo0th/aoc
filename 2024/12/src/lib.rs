@@ -97,6 +97,24 @@ pub fn solve_a(input: String) -> i64 {
 }
 
 pub fn solve_b(input: String) -> i64 {
+    let mut areas: HashMap<char, HashSet<(i64, i64)>> = HashMap::new();
+
+    input
+        .lines()
+        .enumerate()
+        .flat_map(|(y, line)| {
+            line.char_indices()
+                .map(move |(x, ch)| (ch, (x as i64, y as i64)))
+        })
+        .for_each(|(ch, pos)| {
+            areas.entry(ch).or_default().insert(pos);
+        });
+
+    let areas = areas
+        .iter()
+        .flat_map(|(_, poses)| find_contiguous(poses))
+        .collect::<Vec<_>>();
+
     0
 }
 
